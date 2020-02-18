@@ -391,6 +391,19 @@ function cpgwwc_CloudPayments()
             $this->cpgwwc_addError("Проверка заказа");
 			global $woocommerce;			
 			$order = new WC_Order( $order_id );
+
+			$order_description = '';
+
+			$order_items = $order->get_items( array( 'line_item' ) ); // line_item means products only
+
+			foreach ( $order_items as $item_id => $order_item ) {
+
+				if ( ! empty( $order_description ) ) {
+					$order_description .= ', ';
+				}
+				$order_description .= $order_item->get_name();
+			}
+
 			$title = array();
 			$items_array = array();
 			$items = $order->get_items();
@@ -421,7 +434,7 @@ function cpgwwc_CloudPayments()
 				var widget = new cp.CloudPayments({language: '<?=$this->language?>'});
 		    	widget.<?=$widget_f?>({
 		            publicId: '<?=$this->public_id?>',
-		            description: 'Оплата заказа <?=$order_id?>',
+		            description: '<?=$order_description?>',
 		            amount: <?=$order->get_total()?>,
 		            currency: '<?=$this->currency?>',
 		            skin: '<?=$this->skin?>',
