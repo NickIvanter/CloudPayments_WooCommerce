@@ -97,6 +97,7 @@ function cpgwwc_CloudPayments()
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
             add_action( 'woocommerce_api_'. strtolower( get_class( $this ) ), array( $this, 'cpgwwc_handle_callback' ) );
             add_action('woocommerce_order_status_changed', array( $this, 'cpgwwc_update_order_status'), 10, 3);
+			add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 		}
 		
 		// Admin options
@@ -440,6 +441,53 @@ function cpgwwc_CloudPayments()
 
 			<?php
 		}
+
+		/**
+		 * Output our addition to the order received page.
+		 * Authenticate the user and direct them to 'My Account' page.
+		 */
+		public function thankyou_page() {
+
+			$order_id = wc_get_order_id_by_order_key( $_GET['key'] );
+
+			echo '<p><strong>Оплата принята</strong>.</p>';
+			echo '<p>Пожалуйста, проверьте почту: мы отправили подтверждение и инструкции для входа в личный кабинет.</p>';
+
+			/** @var WC_Abstract_Order $order */
+			$order = wc_get_order( $order_id );
+
+			if ( $user = get_user_by( 'email', $order->get_billing_email() ) ) {
+				$user_id = $user->ID;
+			} else {
+				$user_id = wc_create_new_customer( $order->get_billing_email(), '', '', array(
+					'first_name'   => $order->get_billing_first_name(),
+					'last_name'    => $order->get_billing_last_name(),
+					'display_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+				) );
+
+				if ( is_wp_error( $user_id ) ) {
+					throw new Exception( $user_id->get_error_message() );
+				}
+			}
+
+			/**
+			 * Unless the billing email belongs to an administrator,
+			 * authenticate user without requiring a password.
+			 */
+			if ( ! user_can( $user_id, 'manage_options' ) ) {
+				wc_set_customer_auth_cookie( $user_id );
+
+				/*
+				 * Link the order to the user_id.
+				 */
+				wc_update_new_customer_past_orders( $user_id );
+
+				echo '<p><strong>Уже можно приступать к обучению</strong>.</p>';
+			}
+
+			echo '<p><a href="' . get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) . '" class="button">Перейти в личный кабинет</a><p>';
+		}
+
       	public function cpgwwc_processRequest($action,$request)
       	{
               $this->cpgwwc_addError("processRequest - action");
