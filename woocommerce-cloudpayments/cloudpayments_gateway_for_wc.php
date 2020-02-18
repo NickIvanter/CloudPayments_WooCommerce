@@ -99,23 +99,8 @@ function cpgwwc_CloudPayments()
             add_action('woocommerce_order_status_changed', array( $this, 'cpgwwc_update_order_status'), 10, 3);
 		}
 		
-		// Check SSL
-		public function cpgwwc_ssl_check() {			
-			if ( get_option( 'woocommerce_force_ssl_checkout' ) == 'no' && $this->enabled == 'yes' ) {
-				$this->msg = sprintf( __( 'Включена поддержка оплаты через CloudPayments и не активирована опция <a href="%s">"Принудительная защита оформления заказа"</a>; безопасность заказов находится под угрозой! Пожалуйста, включите SSL и проверьте корректность установленных сертификатов.', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );
-				$this->enabled = false;
-				return false;
-			}
-			return true;
-		}
-		
 		// Admin options
 		public function admin_options() {
-			if ( !$this->cpgwwc_ssl_check() ) {
-				?>
-				<div class="inline error"><p><strong><?php echo __( 'Warning', 'woocommerce' ); ?></strong>: <?php echo $this->msg; ?></p></div>
-				<?php
-			}				
 			?>
 				<h3>CloudPayments</h3>
 				<p>CloudPayments – прямой и простой прием платежей с кредитных карт</p>
