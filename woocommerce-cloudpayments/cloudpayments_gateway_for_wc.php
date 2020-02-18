@@ -448,7 +448,7 @@ function cpgwwc_CloudPayments()
 						window.location.replace('<?=$this->get_return_url($order)?>');
 			        },
 			        function (reason, options) {
-						window.location.replace('<?=$order->get_cancel_order_url()?>');
+						window.location.replace('<?=$order->get_checkout_payment_url()?>');
 		        	}
 		        );
 			</script>
