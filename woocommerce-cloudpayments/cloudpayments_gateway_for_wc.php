@@ -98,6 +98,7 @@ function cpgwwc_CloudPayments()
             add_action( 'woocommerce_api_'. strtolower( get_class( $this ) ), array( $this, 'cpgwwc_handle_callback' ) );
             add_action('woocommerce_order_status_changed', array( $this, 'cpgwwc_update_order_status'), 10, 3);
 			add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
+			add_action( 'woocommerce_thankyou_stripe', array( $this, 'thankyou_page' ) );
 		}
 		
 		// Admin options
@@ -382,7 +383,7 @@ function cpgwwc_CloudPayments()
 				
 			return array(
 				'result'    => 'success',
-				'redirect'  => add_query_arg( 'key', $order->order_key, add_query_arg( 'order-pay', $order_id, $order->get_checkout_payment_url( true ) ) )
+				'redirect'  => add_query_arg( 'key', $order->get_order_key(), add_query_arg( 'order-pay', $order_id, $order->get_checkout_payment_url( true ) ) )
 			);
 		}
 		
@@ -493,7 +494,9 @@ function cpgwwc_CloudPayments()
 				/*
 				 * Link the order to the user_id.
 				 */
-				wc_update_new_customer_past_orders( $user_id );
+				if ( $user = get_user_by( 'id', $user_id ) ) {
+					do_action( 'wp_login', $user->user_login, $user );
+				}
 
 				echo '<p><strong>Уже можно приступать к обучению</strong>.</p>';
 			}
