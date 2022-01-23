@@ -30,10 +30,14 @@ function cpgwwc_register_post_statuses()
 add_filter( 'init', 'cpgwwc_register_post_statuses' );
 
 // Register script
-function cpgwwc_my_scripts_method(){
-    wp_enqueue_script( 'cpgwwc_CloudPayments_script', "https://widget.cloudpayments.ru/bundles/cloudpayments?cms=WordPress");
-};
-add_action( 'init', 'cpgwwc_my_scripts_method' );
+function cpgwwc_my_scripts_method() {
+	if ( ! is_cart() &&
+	     ! is_checkout() &&
+	     ! isset( $_GET['pay_for_order'] ) ) {
+		return;
+	}
+	wp_enqueue_script( 'cpgwwc_CloudPayments_script', "https://widget.cloudpayments.ru/bundles/cloudpayments?cms=WordPress" );
+}
 
 // Add New Order Statuses to WooCommerce
 function cpgwwc_add_order_statuses( $order_statuses )
@@ -97,6 +101,7 @@ function cpgwwc_CloudPayments()
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
             add_action( 'woocommerce_api_'. strtolower( get_class( $this ) ), array( $this, 'cpgwwc_handle_callback' ) );
             add_action('woocommerce_order_status_changed', array( $this, 'cpgwwc_update_order_status'), 10, 3);
+			add_action( 'wp_enqueue_scripts', 'cpgwwc_my_scripts_method' );
 		}
 		
 		// Admin options
