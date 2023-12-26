@@ -36,7 +36,7 @@ $hide_widget_control = ! $tokens ? ' hide-widget_control' : '';
 	} else {
 		echo apply_filters( // phpcs:ignore
 			'cloudpayments_checkout_no_tokens_text',
-			'<p>' . esc_html__( 'Для оплаты заказа вы будете перенаправлены на страницу сервиса Cloud Payments.', 'cloudpayments' ) . '</p>',
+			esc_html__( $this->description, 'cloudpayments' ),
 			$tokens
 		);
 	}
