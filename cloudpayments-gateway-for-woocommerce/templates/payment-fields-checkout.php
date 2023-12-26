@@ -2,7 +2,7 @@
 $current_user_id     = get_current_user_id();
 $tokens              = WC_Payment_Tokens::get_customer_tokens( $current_user_id, 'wc_cloudpayments_gateway' );
 $wrapper_class       = $tokens ? ' cloud-payments--has-tokens' : ' cloud-payments--no-tokens';
-$hide_save_cart      = $tokens ? ' hide-save_cart' : '';
+$hide_save_cart      = true || $tokens ? ' hide-save_cart' : '';
 $hide_widget_control = ! $tokens ? ' hide-widget_control' : '';
 ?>
 <div class="cloud-payments<?php echo esc_attr( $wrapper_class ); ?>">
@@ -60,7 +60,7 @@ $hide_widget_control = ! $tokens ? ' hide-widget_control' : '';
 		?>
 	</label>
 
-	<?php if ( is_user_logged_in() ) : ?>
+	<?php if ( true || is_user_logged_in() ) : ?>
 		<label class="cloud-payments-save-card cp_save_card<?php echo esc_attr( $hide_save_cart ); ?>">
 			<input
 				type="checkbox"
