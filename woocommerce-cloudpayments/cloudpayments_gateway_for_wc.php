@@ -405,7 +405,7 @@ function cpgwwc_CloudPayments()
 				if ( ! empty( $order_description ) ) {
 					$order_description .= ', ';
 				}
-				$order_description .= $order_item->get_name();
+				$order_description .= strip_tags( $order_item->get_name() );
 			}
 
 			$title = array();
