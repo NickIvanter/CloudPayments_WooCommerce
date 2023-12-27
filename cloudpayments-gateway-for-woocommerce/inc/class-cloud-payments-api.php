@@ -109,7 +109,12 @@ class CloudPayments_Api
                 $order->update_status($this->DMS_AU_status);
             }
         } else {
-            $order->update_status($this->status_pay);
+            /**
+             * We don't want to set the order status here because this causes the payment_complete() method
+             * to proceed on a different, non-standard path. The order status change is handled by the WC core later.
+             *
+             * $order->update_status($this->status_pay);
+             */
             $order->payment_complete();
             $order->add_order_note(sprintf('Payment approved (TransactionID: %s)', json_encode($request['TransactionId'])));
         }
