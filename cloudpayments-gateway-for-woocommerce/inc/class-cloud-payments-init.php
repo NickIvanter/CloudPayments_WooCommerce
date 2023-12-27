@@ -188,7 +188,7 @@ class CloudPayments_Init
         $data['currency']    = ($options->currency !== 'siteCurrency') ? $options->currency : get_woocommerce_currency();
         $data['skin']        = $options->skin;
         $data['invoiceId']   = $order_id;
-        $data['email']       = $current_user->user_email;
+        $data['email']       = $order->get_billing_email();
         $data['data']        = $options->kassa_enabled == 'yes' ? $kassa_array : [];
         
         return array(
