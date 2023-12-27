@@ -170,6 +170,17 @@ class CloudPayments_Init
             $data['accountId'] = $order->get_user_id();
         }
 
+        if (empty($data['accountId']) || !$data['accountId']) {
+            /**
+             * AccountID == 1 is a special value that we set when the user is not logged in at the time of payment
+             * and yet we want to save the card and receive the token. CloudPayments requires AccountId to be set
+             * in order to save the card.
+             *
+             * We then process it appropriately when receiving the token.
+             */
+            $data['accountId'] = 1;
+        }
+
         $order_description = '';
 
         $order_items = $order->get_items( array( 'line_item' ) ); // line_item means products only

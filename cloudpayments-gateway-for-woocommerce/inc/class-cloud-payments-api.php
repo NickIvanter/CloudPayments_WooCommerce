@@ -115,6 +115,22 @@ class CloudPayments_Api
         }
         
         /** СОЗДАНИЕ ТОКЕНА */
+
+        if (!empty($request['AccountId']) && $request['AccountId'] == 1) {
+            /**
+             * AccountID == 1 is a special value that we set when the user is not logged in at the time of payment
+             * and yet we want to save the card and receive the token. CloudPayments requires AccountId to be set
+             * in order to save the card.
+             */
+            if (function_exists('my_wc_get_or_create_user')) {
+
+                $user_id = my_wc_get_or_create_user($order);
+
+                $request['AccountId'] = $user_id;
+            } else {
+                $request['AccountId'] = 0;
+            }
+        }
         
         if ( ! empty($request['AccountId'])) {
             
