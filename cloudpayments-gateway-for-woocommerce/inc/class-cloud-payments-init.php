@@ -169,9 +169,21 @@ class CloudPayments_Init
         if (is_user_logged_in() && isset($_GET['cp_save_card']) && !empty($_GET['cp_save_card'])) {
             $data['accountId'] = $order->get_user_id();
         }
+
+        $order_description = '';
+
+        $order_items = $order->get_items( array( 'line_item' ) ); // line_item means products only
+
+        foreach ( $order_items as $item_id => $order_item ) {
+
+            if ( ! empty( $order_description ) ) {
+                $order_description .= ', ';
+            }
+            $order_description .= strip_tags( $order_item->get_name() );
+        }
         
         $data['publicId']    = $options->public_id;
-        $data['description'] = $options->order_text . ' ' . $order_id;
+        $data['description'] = $order_description;
         $data['amount']      = (float)$order->get_total();
         $data['currency']    = ($options->currency !== 'siteCurrency') ? $options->currency : get_woocommerce_currency();
         $data['skin']        = $options->skin;
