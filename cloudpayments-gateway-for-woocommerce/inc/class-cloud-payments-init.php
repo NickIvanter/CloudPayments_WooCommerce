@@ -193,6 +193,7 @@ class CloudPayments_Init
             $order_description .= strip_tags( $order_item->get_name() );
         }
         
+        $data['autoClose']   = 3;
         $data['publicId']    = $options->public_id;
         $data['description'] = $order_description;
         $data['amount']      = (float)$order->get_total();
