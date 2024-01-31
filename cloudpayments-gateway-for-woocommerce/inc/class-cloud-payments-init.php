@@ -202,6 +202,13 @@ class CloudPayments_Init
         $data['invoiceId']   = $order_id;
         $data['email']       = $order->get_billing_email();
         $data['data']        = $options->kassa_enabled == 'yes' ? $kassa_array : [];
+
+        if ($data['amount'] == 0) {
+            $data['amount'] = 1;
+            $data['enabledDMS'] = true;
+            $data['description'] = "Мы спишем 1₽ для проверки карты и потом вернём его";
+            $widget_f = 'auth';
+        }
         
         return array(
             'data'       => $data,
