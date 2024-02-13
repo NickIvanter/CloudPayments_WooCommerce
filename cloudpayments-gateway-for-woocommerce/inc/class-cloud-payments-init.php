@@ -165,21 +165,11 @@ class CloudPayments_Init
             $widget_f = 'auth';
             $data['enabledDMS'] = true;
         }
-        
-        if (is_user_logged_in() && isset($_GET['cp_save_card']) && !empty($_GET['cp_save_card'])) {
-            $data['accountId'] = $order->get_user_id();
-        }
 
-        if (empty($data['accountId']) || !$data['accountId']) {
-            /**
-             * AccountID == 1 is a special value that we set when the user is not logged in at the time of payment
-             * and yet we want to save the card and receive the token. CloudPayments requires AccountId to be set
-             * in order to save the card.
-             *
-             * We then process it appropriately when receiving the token.
-             */
-            $data['accountId'] = 1;
-        }
+        /**
+         * Use the user's email as the account id -- it is much more reliable than the WP numeric ID.
+         */
+        $data['accountId'] = $order->get_billing_email();
 
         $order_description = '';
 

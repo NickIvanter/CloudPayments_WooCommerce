@@ -121,11 +121,10 @@ class CloudPayments_Api
         
         /** СОЗДАНИЕ ТОКЕНА */
 
-        if (!empty($request['AccountId']) && $request['AccountId'] == 1) {
+        if ( ! empty($request['AccountId']) ) {
             /**
-             * AccountID == 1 is a special value that we set when the user is not logged in at the time of payment
-             * and yet we want to save the card and receive the token. CloudPayments requires AccountId to be set
-             * in order to save the card.
+             * We have set the user's email in $request['AccountId'] when forming the request. Now, we need to
+             * replace it with the numeric WP user_id in order to save the token in WooCommerce.
              */
             if (function_exists('my_wc_get_or_create_user')) {
 
