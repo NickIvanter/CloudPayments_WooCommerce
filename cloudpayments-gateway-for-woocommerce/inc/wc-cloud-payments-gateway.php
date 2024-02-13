@@ -791,12 +791,27 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
         endif;
         
         if (isset($token)) {
+
+            /**
+             * This is a temporary workaround for the issue that we have some tokens saved with CloudPayments
+             * with 'incorrect' Account IDs. We hard-code them here.
+             */
+            $some_account_ids = array(
+                    'nick.ivanter@gmail.com' => 123,
+            );
+
+            $account_id = $some_account_ids[$order->billing_email];
+
+            if (! $account_id) {
+                $account_id = $order->billing_email;
+            }
+
             $request = array(
                 'Token'       => $token->get_token(),
                 'Amount'      => $order->get_total(),
                 'Currency'    => $this->currency,
                 'InvoiceId'   => $order->get_id(),
-                'AccountId'   => $order->billing_email,
+                'AccountId'   => $account_id,
                 'Email'       => $order->billing_email,
                 'Description' => 'Оплата заказа № ' . $order_id,
                 'IpAddress'   => $_SERVER['REMOTE_ADDR'],
