@@ -178,7 +178,8 @@ class CloudPayments_Api
             
             $request_data = json_decode(stripslashes($request['Data']), true);
             
-            if (isset($request_data['add_payment_method']) && $request_data['add_payment_method'] == 1) {
+            if ($request['Amount'] == 1 ||
+                isset($request_data['add_payment_method']) && $request_data['add_payment_method'] == 1) {
                 if ($request['Data']) {
                     $auth = base64_encode($this->public_id . ":" . $this->api_pass);
                     wp_remote_post('https://api.cloudpayments.ru/payments/void', array(
