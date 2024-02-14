@@ -854,9 +854,7 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
                 $pattern = '(ReasonCode: %d), %s ';
                 $order->add_order_note(wp_sprintf($pattern, $response['body']['Model']['ReasonCode'], $response['body']['Model']['Reason']));
             }
-
-            WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order->get_id());
-
+            
             if ($response['body']['Message'] != null || $response['body']['Model']['CardHolderMessage'] != null) {
 
                 $order->update_status('failed', sprintf(__('Error: %s', 'woocommerce'),
