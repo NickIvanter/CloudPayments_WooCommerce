@@ -128,9 +128,15 @@ class CloudPayments_Api
              */
             if (function_exists('my_wc_get_or_create_user')) {
 
-                $user_id = my_wc_get_or_create_user($order);
+                /**
+                 * This may be not a payment for an order but rather the user's adding new card via the 
+                 * 'payment methods' account page. In that case, $request['AccountId'] is already set to user_id.
+                 */
+                if ( $order && $order->get_billing_email() ) {
 
-                $request['AccountId'] = $user_id;
+                    $user_id = my_wc_get_or_create_user($order);
+                    $request['AccountId'] = $user_id;
+                }
             } else {
                 $request['AccountId'] = 0;
             }
