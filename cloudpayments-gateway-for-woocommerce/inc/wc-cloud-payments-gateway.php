@@ -184,7 +184,7 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
             'Currency'    => $this->currency,
             'InvoiceId'   => $order_id,
             'AccountId'   => $token->get_user_id(),
-            'Email'       => $order->billing_email,
+            'Email'       => $order->get_billing_email(),
             'Description' => 'Оплата заказа № ' . $order_id,
             'IpAddress'   => $_SERVER['REMOTE_ADDR'],
             'JsonData'    => $this->kassa_enabled == 'yes' ? $kassa_array : [],
@@ -768,8 +768,8 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
                     "Items"            => $items_array,
                     "taxationSystem"   => $this->kassa_taxsystem,
                     'calculationPlace' => 'www.' . $_SERVER['SERVER_NAME'],
-                    "email"            => $order->billing_email,
-                    "phone"            => $order->billing_phone
+                    "email"            => $order->get_billing_email(),
+                    "phone"            => $order->get_billing_phone()
                 )
             ))
         );
@@ -800,10 +800,10 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
                     'nick.ivanter@gmail.com' => 123,
             );
 
-            $account_id = $some_account_ids[$order->billing_email];
+            $account_id = $some_account_ids[$order->get_billing_email()];
 
             if (! $account_id) {
-                $account_id = $order->billing_email;
+                $account_id = $order->get_billing_email();
             }
 
             $order_description = '';
@@ -824,7 +824,7 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
                 'Currency'    => $this->currency,
                 'InvoiceId'   => $order->get_id(),
                 'AccountId'   => $account_id,
-                'Email'       => $order->billing_email,
+                'Email'       => $order->get_billing_email(),
                 'Description' => $order_description,
                 'IpAddress'   => $_SERVER['REMOTE_ADDR'],
                 'JsonData'    => $this->kassa_enabled == 'yes' ? $kassa_array : [],
