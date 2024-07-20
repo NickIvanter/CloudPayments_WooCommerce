@@ -797,10 +797,12 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
              * with 'incorrect' Account IDs. We hard-code them here.
              */
             $some_account_ids = array(
-                    'nick.ivanter@gmail.com' => 123,
+                    'nick@example.com' => 123,
             );
 
-            $account_id = $some_account_ids[$order->get_billing_email()];
+            if ( array_key_exists( $order->get_billing_email(), $some_account_ids ) ) {
+                $account_id = $some_account_ids[$order->get_billing_email()];
+            }
 
             if (! $account_id) {
                 $account_id = $order->get_billing_email();
