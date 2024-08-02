@@ -183,7 +183,7 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
             'Amount'      => $order->get_total(),
             'Currency'    => $this->currency,
             'InvoiceId'   => $order_id,
-            'AccountId'   => $token->get_user_id(),
+            'AccountId'   => $order->get_billing_email(),
             'Email'       => $order->get_billing_email(),
             'Description' => 'Оплата заказа № ' . $order_id,
             'IpAddress'   => $_SERVER['REMOTE_ADDR'],
