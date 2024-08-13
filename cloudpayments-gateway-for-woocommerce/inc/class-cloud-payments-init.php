@@ -67,8 +67,9 @@ class CloudPayments_Init
             $widget_f = 'auth';
 
             $data['publicId']    = $options->public_id;
-            $data['description'] = 'Добавление карты';
-            $data['amount']      = ($options->currency !== 'siteCurrency') ? 11 : 1;
+            $data['description'] = 'Мы спишем 1₽ для проверки карты и потом вернём его';
+            $data['amount']      = 1;
+            $data['enabledDMS']  = true;
             $data['currency']    = ($options->currency !== 'siteCurrency') ? $options->currency : get_woocommerce_currency();
             $data['skin']        = $options->skin;
             $data['accountId']   = $current_user->ID;
