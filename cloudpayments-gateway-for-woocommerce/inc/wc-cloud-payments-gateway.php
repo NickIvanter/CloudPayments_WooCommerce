@@ -177,15 +177,35 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
         $access_psw = $this->api_pass;
         
         $token = WC_Payment_Tokens::get((int)$_POST['cp_card']);
+
+        $order_description = '';
+
+        $order_items = $order->get_items( array( 'line_item' ) ); // line_item means products only
+
+        foreach ( $order_items as $item_id => $order_item ) {
+
+            if ( ! empty( $order_description ) ) {
+                $order_description .= ', ';
+            }
+            $order_description .= strip_tags( $order_item->get_name() );
+        }
+
+        $order_total = $order->get_total();
+
+        if ($order_total == 0) {
+            $order_total = 1;
+            $order_description = "Мы спишем 1₽ для проверки карты и потом вернём его";
+            $widget_f = 'auth';
+        }
         
         $request = array(
             'Token'       => $token->get_token(),
-            'Amount'      => $order->get_total(),
+            'Amount'      => $order_total,
             'Currency'    => $this->currency,
             'InvoiceId'   => $order_id,
             'AccountId'   => $order->get_billing_email(),
             'Email'       => $order->get_billing_email(),
-            'Description' => 'Оплата заказа № ' . $order_id,
+            'Description' => $order_description,
             'IpAddress'   => $_SERVER['REMOTE_ADDR'],
             'JsonData'    => $this->kassa_enabled == 'yes' ? $kassa_array : [],
         );
