@@ -209,9 +209,23 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
             'IpAddress'   => $_SERVER['REMOTE_ADDR'],
             'JsonData'    => $this->kassa_enabled == 'yes' ? $kassa_array : [],
         );
+
+        $request2 = $request;
+        $request2['AccountId'] = $order->get_user_id();
         
         //отправляем запрос        
         $auth     = base64_encode($accesskey . ":" . $access_psw);
+
+        $maxAttempts = 2;
+        $attempt = 0;
+
+        while ($attempt < $maxAttempts) {
+
+        if ($attempt > 0) {
+            $request = $request2;
+        }
+        $attempt++;
+
         $response = wp_remote_post('https://api.cloudpayments.ru/payments/tokens/' . $widget_f,
             array(
                 'timeout'     => 30,
@@ -234,6 +248,10 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
         }
         
         if ($response['body']['Message'] != null) {
+
+            if ($response['body']['Message'] == 'Invalid token' && $order->get_user_id() > 0 && $attempt < $maxAttempts) {
+                continue;
+            } 
             
             wc_add_notice(__('Error:', 'woocommerce') . ' ' . $response['body']['Message'], 'error');
         }
@@ -242,6 +260,10 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
             
             wc_add_notice(__('Error:', 'woocommerce') . ' ' . $response['body']['Model']['CardHolderMessage'], 'error');
         }
+
+        break;
+
+        } // End of while()
         
         return false;
     }
@@ -851,8 +873,22 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
                 'IpAddress'   => $_SERVER['REMOTE_ADDR'],
                 'JsonData'    => $this->kassa_enabled == 'yes' ? $kassa_array : [],
             );
+
+            $request2 = $request;
+            $request2['AccountId'] = $user_id;
             
             $auth     = base64_encode($this->public_id . ":" . $this->api_pass);
+
+            $maxAttempts = 2;
+            $attempt = 0;
+
+            while ($attempt < $maxAttempts) {
+
+            if ($attempt > 0) {
+                $request = $request2;
+            }
+            $attempt++;
+
             $response = wp_remote_post('https://api.cloudpayments.ru/payments/tokens/' . $widget_f,
                 array(
                     'timeout'     => 30,
@@ -879,9 +915,16 @@ class WC_CloudPayments_Gateway extends WC_Payment_Gateway
             
             if ($response['body']['Message'] != null || $response['body']['Model']['CardHolderMessage'] != null) {
 
+                if ($response['body']['Message'] == 'Invalid token' && $attempt < $maxAttempts) {
+                    continue;
+                } 
+
                 $order->update_status('failed', sprintf(__('Error: %s', 'woocommerce'),
                     $response['body']['Message'] . ' ' . $response['body']['Model']['CardHolderMessage']));
             }
+
+            break;
+            } // End of while()
             
         }
         
